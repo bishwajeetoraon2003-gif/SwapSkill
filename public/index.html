@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillSwap – Exchange Skills, Share Knowledge, Grow Together</title>
+  <meta name="description" content="SkillSwap is a modern peer-to-peer skill exchange platform that allows you to teach skills you know and learn new skills from others without requiring monetary payments." />
+
+  <!-- Google Fonts: Plus Jakarta Sans for high-aesthetic modern typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/reset.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+</head>
+<body>
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="site-header" id="main-header">
+    <div class="header-container">
+      <a href="#dashboard" class="brand-logo" id="brand-logo-link">
+        <div class="brand-icon">🔄</div>
+        <div class="brand-text">Skill<span>Swap</span></div>
+      </a>
+
+      <!-- Main Navigation Menu -->
+      <nav class="main-nav" id="main-nav" aria-label="Main Navigation">
+        <a href="#dashboard" class="nav-link" data-view="dashboard" id="nav-dashboard-link">
+          <span>📊 Dashboard</span>
+        </a>
+        <a href="#discovery" class="nav-link" data-view="discovery" id="nav-discovery-link">
+          <span>🔍 Discover Skills</span>
+        </a>
+        <a href="#smart-matches" class="nav-link" data-view="smart-matches" id="nav-smart-matches-link">
+          <span>🎯 Smart Matches</span>
+        </a>
+        <a href="#swaps" class="nav-link" data-view="swaps" id="nav-swaps-link">
+          <span>🤝 My Swaps</span>
+          <span class="nav-counter" id="nav-swap-counter" style="display: none;">0</span>
+        </a>
+        <a href="#profile" class="nav-link" data-view="profile" id="nav-profile-link">
+          <span>👤 My Profile</span>
+        </a>
+      </nav>
+
+      <!-- Right Header Actions (Demo Switcher + User Account) -->
+      <div class="header-actions">
+        <!-- 1-Click Demo Profiles Switcher for Instant Testing -->
+        <div class="demo-switcher-wrap">
+          <button class="demo-btn" id="demo-switcher-toggle" title="Switch between realistic demo test accounts">
+            <span>⚡ Demo Switcher</span>
+            <span>▾</span>
+          </button>
+          <div class="demo-dropdown" id="demo-dropdown-menu">
+            <div class="demo-dropdown-title">Select Test Profile (Instant Login)</div>
+            <div id="demo-users-list"></div>
+          </div>
+        </div>
+
+        <!-- Dynamic User Area -->
+        <div id="header-user-area"></div>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation menu">
+          ☰
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Container: Swapped dynamically via Router -->
+  <main class="main-wrapper" id="view-container">
+    <div style="text-align: center; padding: 4rem;">
+      <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔄</div>
+      <h2 style="font-size: 1.5rem; font-weight: 700;">Loading SkillSwap...</h2>
+    </div>
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-weight: 800; font-size: 1.1rem; color: var(--text-main);">SkillSwap</span>
+        <span>•</span>
+        <span>Peer-to-Peer Knowledge Exchange</span>
+      </div>
+      <div>
+        <span>Grow Together with Zero Monetary Payments 🤝 Built for Community Learning</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notifications Container -->
+  <aside class="toast-container" id="toast-container" aria-live="polite"></aside>
+
+  <!-- ==========================================================================
+       MODALS
+       ========================================================================== -->
+
+  <!-- 1. Authentication Modal (Login / Register) -->
+  <div class="modal-overlay" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="auth-modal-title">Sign In to SkillSwap</h3>
+        <button class="modal-close" aria-label="Close dialog">✕</button>
+      </div>
+      <form id="auth-form">
+        <div class="modal-body">
+          <div id="auth-register-fields" style="display: none;">
+            <div class="form-group">
+              <label class="form-label" for="auth-name">Full Name <span class="req">*</span></label>
+              <input type="text" id="auth-name" class="form-control" placeholder="e.g. Maya Lin" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="auth-title">Professional Title / Headline</label>
+              <input type="text" id="auth-title" class="form-control" placeholder="e.g. Frontend Engineer & Guitar Hobbyist" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="auth-location">Location / Timezone</label>
+              <input type="text" id="auth-location" class="form-control" placeholder="e.g. San Francisco, CA (PST)" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="auth-email">Email Address <span class="req">*</span></label>
+            <input type="email" id="auth-email" class="form-control" placeholder="alex@example.com" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="auth-password">Password <span class="req">*</span></label>
+            <input type="password" id="auth-password" class="form-control" placeholder="••••••••" required />
+            <small style="color: var(--text-muted); font-size: 0.75rem;">Default demo password is <code>password123</code></small>
+          </div>
+        </div>
+        <div class="modal-footer" style="justify-content: space-between;">
+          <button type="button" class="btn btn-ghost btn-sm" id="auth-switch-mode-btn" onclick="toggleAuthMode()">
+            Need an account? Sign Up
+          </button>
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="auth-submit-btn">Sign In</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Propose Swap Modal -->
+  <div class="modal-overlay" id="propose-swap-modal" role="dialog" aria-modal="true" aria-labelledby="propose-swap-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="propose-swap-title">Propose a Skill Swap</h3>
+        <button class="modal-close" aria-label="Close dialog">✕</button>
+      </div>
+      <form id="propose-swap-form">
+        <input type="hidden" id="swap-receiver-id" />
+        <div class="modal-body">
+          <!-- Target Partner Info -->
+          <div style="display: flex; align-items: center; gap: 0.85rem; background: var(--bg-subtle); padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem;">
+            <img src="" id="swap-modal-partner-avatar" alt="Partner Avatar" style="width: 44px; height: 44px; border-radius: var(--radius-full); object-fit: cover;" />
+            <div>
+              <div style="font-weight: 700;" id="swap-modal-partner-name">Partner Name</div>
+              <div style="font-size: 0.8125rem; color: var(--text-muted);" id="swap-modal-partner-title">Partner Headline</div>
+            </div>
+          </div>
+
+          <!-- Swap Exchange Selectors -->
+          <div class="form-group">
+            <label class="form-label" for="swap-offered-skill">
+              🎓 Skill You Will Teach: <span class="req">*</span>
+            </label>
+            <select id="swap-offered-skill" class="form-control" required></select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="swap-requested-skill">
+              🎯 Skill You Want to Learn from Them: <span class="req">*</span>
+            </label>
+            <select id="swap-requested-skill" class="form-control" required></select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="swap-format-select">Preferred Exchange Format</label>
+            <select id="swap-format-select" class="form-control">
+              <option value="1-on-1 Video Call">1-on-1 Video Call (Google Meet / Zoom)</option>
+              <option value="Interactive Screen Share & Pair Work">Interactive Screen Share & Pair Work</option>
+              <option value="Async Code/Work Review & Feedback">Async Code/Work Review & Feedback</option>
+              <option value="Chat Jam & Micro-Lessons">Chat Jam & Micro-Lessons</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="swap-time-input">Estimated Time / Weekly Availability</label>
+            <input type="text" id="swap-time-input" class="form-control" placeholder="e.g. 1 hour weekly on weekends" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="swap-message-input">Personalized Proposal Note</label>
+            <textarea id="swap-message-input" class="form-control" rows="3" placeholder="Tell them what you hope to learn and how you can help them achieve their goals..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-accent">Send Swap Proposal 🚀</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Complete Swap & Review Modal -->
+  <div class="modal-overlay" id="complete-swap-modal" role="dialog" aria-modal="true" aria-labelledby="complete-swap-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="complete-swap-title">Mark Exchange Completed</h3>
+        <button class="modal-close" aria-label="Close dialog">✕</button>
+      </div>
+      <form id="complete-swap-form">
+        <input type="hidden" id="complete-swap-id" />
+        <div class="modal-body">
+          <p style="font-size: 0.9375rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Congratulations on concluding your knowledge-sharing sessions with <strong id="complete-swap-partner-name"></strong>! Rate your experience to reward their contribution to the community.
+          </p>
+
+          <div class="form-group">
+            <label class="form-label" for="complete-swap-rating">Rating (1 to 5 Stars) <span class="req">*</span></label>
+            <select id="complete-swap-rating" class="form-control" required>
+              <option value="5">⭐⭐⭐⭐⭐ 5 Stars - Exceptional Teacher & Partner</option>
+              <option value="4">⭐⭐⭐⭐ 4 Stars - Great Experience</option>
+              <option value="3">⭐⭐⭐ 3 Stars - Good & Helpful</option>
+              <option value="2">⭐⭐ 2 Stars - Fair</option>
+              <option value="1">⭐ 1 Star - Needs Improvement</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="complete-swap-review">Public Review & Endorsement</label>
+            <textarea id="complete-swap-review" class="form-control" rows="3" placeholder="What did you learn? How was their teaching style?" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-accent">Submit Review & Finish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Add / Edit Teach Skill Modal -->
+  <div class="modal-overlay" id="teach-skill-modal" role="dialog" aria-modal="true" aria-labelledby="teach-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="teach-modal-title">Add Skill You Can Teach</h3>
+        <button class="modal-close" aria-label="Close dialog">✕</button>
+      </div>
+      <form id="teach-skill-form">
+        <input type="hidden" id="teach-skill-id" />
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="teach-skill-title">Skill Name <span class="req">*</span></label>
+            <input type="text" id="teach-skill-title" class="form-control" placeholder="e.g. React & Next.js, Conversational Italian, UI Design..." required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="teach-skill-category">Category</label>
+            <select id="teach-skill-category" class="form-control">
+              <option value="Development">Development</option>
+              <option value="Design">Design</option>
+              <option value="Languages">Languages</option>
+              <option value="Data Science">Data Science</option>
+              <option value="Music">Music</option>
+              <option value="Photography">Photography</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Business">Business</option>
+              <option value="Writing">Writing</option>
+              <option value="Cooking">Cooking</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="teach-skill-proficiency">Your Proficiency Level</label>
+            <select id="teach-skill-proficiency" class="form-control">
+              <option value="Expert">Expert (Professional / Industry Level)</option>
+              <option value="Advanced">Advanced (Strong practical experience)</option>
+              <option value="Intermediate">Intermediate (Comfortable teaching basics)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="teach-skill-years">Years of Experience</label>
+            <input type="number" id="teach-skill-years" class="form-control" min="1" max="50" value="3" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="teach-skill-desc">Brief Description / What You Can Cover</label>
+            <textarea id="teach-skill-desc" class="form-control" rows="2" placeholder="e.g. Component architecture, hooks, state management, and real-world project reviews."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Teaching Skill</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. Add / Edit Learn Skill Modal -->
+  <div class="modal-overlay" id="learn-skill-modal" role="dialog" aria-modal="true" aria-labelledby="learn-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="learn-modal-title">Add Skill You Want to Learn</h3>
+        <button class="modal-close" aria-label="Close dialog">✕</button>
+      </div>
+      <form id="learn-skill-form">
+        <input type="hidden" id="learn-skill-id" />
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="learn-skill-title">Skill or Subject <span class="req">*</span></label>
+            <input type="text" id="learn-skill-title" class="form-control" placeholder="e.g. Conversational Spanish, Machine Learning, Piano..." required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="learn-skill-category">Category</label>
+            <select id="learn-skill-category" class="form-control">
+              <option value="Languages">Languages</option>
+              <option value="Development">Development</option>
+              <option value="Design">Design</option>
+              <option value="Data Science">Data Science</option>
+              <option value="Music">Music</option>
+              <option value="Photography">Photography</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Business">Business</option>
+              <option value="Writing">Writing</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="learn-skill-level">Your Current Level</label>
+            <select id="learn-skill-level" class="form-control">
+              <option value="Beginner">Absolute Beginner (Starting from scratch)</option>
+              <option value="Intermediate">Intermediate (Know basics, looking to level up)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="learn-skill-format">Preferred Learning Format</label>
+            <select id="learn-skill-format" class="form-control">
+              <option value="1-on-1 Video Call">1-on-1 Video Call</option>
+              <option value="Interactive Screen Share">Interactive Screen Share</option>
+              <option value="Exercises & Feedback">Exercises & Feedback</option>
+              <option value="Casual Practice">Casual Practice</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="learn-skill-goal">Target Learning Goal</label>
+            <textarea id="learn-skill-goal" class="form-control" rows="2" placeholder="e.g. Be able to hold basic conversation when traveling, or build my portfolio site."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-accent">Save Learning Goal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6. Edit Profile Modal -->
+  <div class="modal-overlay" id="edit-profile-modal" role="dialog" aria-modal="true" aria-labelledby="edit-profile-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="edit-profile-title">Edit Profile Details</h3>
+        <button class="modal-close" aria-label="Close dialog">✕</button>
+      </div>
+      <form id="edit-profile-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="profile-edit-name">Display Name <span class="req">*</span></label>
+            <input type="text" id="profile-edit-name" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="profile-edit-title">Headline / Title</label>
+            <input type="text" id="profile-edit-title" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="profile-edit-bio">Bio & Learning Philosophy</label>
+            <textarea id="profile-edit-bio" class="form-control" rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="profile-edit-location">Location</label>
+            <input type="text" id="profile-edit-location" class="form-control" placeholder="e.g. Barcelona, Spain" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="profile-edit-timezone">Timezone</label>
+            <input type="text" id="profile-edit-timezone" class="form-control" placeholder="e.g. UTC+1 (CET)" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="profile-edit-avatar">Avatar Image URL</label>
+            <input type="url" id="profile-edit-avatar" class="form-control" placeholder="https://..." />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/state.js"></script>
+  <script src="/js/components.js"></script>
+  <script src="/js/views/dashboardView.js"></script>
+  <script src="/js/views/discoveryView.js"></script>
+  <script src="/js/views/smartMatchView.js"></script>
+  <script src="/js/views/swapsView.js"></script>
+  <script src="/js/views/profileView.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
